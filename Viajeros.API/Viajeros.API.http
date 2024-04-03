@@ -1,0 +1,6 @@
+@Viajeros.API_HostAddress = http://localhost:5286
+
+GET {{Viajeros.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
