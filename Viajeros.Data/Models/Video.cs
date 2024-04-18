@@ -19,6 +19,9 @@ namespace Viajeros.Data.Models
         [MaxLength(500)]
         public string Description { get; set; }
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
+        [Display (Name = "Fecha de subida")]
+        public DateTime Date { get; set; }
+        [Required(ErrorMessage = "El campo {0} es obligatorio")]
         [Display(Name = "Link del video")]
         [MaxLength(200)]
         public string VideoLink { get; set; }

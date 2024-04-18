@@ -9,7 +9,13 @@ namespace Viajeros.Data.Context
         public ViajerosContext(DbContextOptions<ViajerosContext> options) : base(options)
         {
         }
-
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Data Source=BENAME\\SQLEXPRESS;Initial Catalog=viajeros;Integrated Security=True; TrustServerCertificate=True;");
+            }
+        }
         public virtual DbSet<Post> Posts { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<Video> Videos { get; set; }

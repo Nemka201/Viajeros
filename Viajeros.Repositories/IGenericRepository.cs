@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 
 namespace Noticias.Repositories
@@ -15,7 +16,6 @@ namespace Noticias.Repositories
         T FindById(int id);
 
         // Async methods
-
         Task<List<T>> GetAllAsync();
         Task<List<T>> FindByAsync(Expression<Func<T, bool>> predicate);
         Task<T> AddAsync(T entity);
@@ -23,5 +23,8 @@ namespace Noticias.Repositories
         Task SaveAsync();
         Task SaveChangesAsync(T entity);
         Task<T> FindByIdAsync(int id);
+        Task<List<T>> GetByIndexAsync(int pageIndex);
+        Task<List<T>> GetLastByDateAsync(Expression<Func<T, DateTime>> dateSelector);
+        Task<List<T>> GetByDateAndIndexAsync(Expression<Func<T, DateTime>> dateSelector, int pageIndex);
     }
 }

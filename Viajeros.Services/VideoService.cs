@@ -65,4 +65,16 @@ public class VideoService : IVideoService
         _unitOfWork.VideoRepository.Edit(video);
         await _unitOfWork.SaveAsync();
     }
+    public List<Video> FindByName(string name)
+    {
+        return _unitOfWork.VideoRepository.FindBy(v => v.Name == name);
+    }
+    public List<Video> FindByTag(int tagId)
+    {
+        return _unitOfWork.VideoRepository.FindBy(v => v.Tags.Any(t => t.Id == tagId));
+    }
+    public async Task<List<Video>> GetLastsVideosAsync()
+    {
+        return await _unitOfWork.VideoRepository.GetLastByDateAsync(n => n.Date);
+    }
 }

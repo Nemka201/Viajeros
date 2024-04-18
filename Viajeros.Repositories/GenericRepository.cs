@@ -25,7 +25,7 @@ namespace Noticias.Repositories
             IQueryable<T> query = _entities.Set<T>();
             return query.ToList();
         }
-        public List<T> FindBy(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        public List<T> FindBy(Expression<Func<T, bool>> predicate)
         {
             IQueryable<T> query = _entities.Set<T>().Where(predicate);
             return query.ToList();
@@ -113,6 +113,37 @@ namespace Noticias.Repositories
         public Task<T> FindByIdAsync(int id)
         {
             return _entities.Set<T>().FindAsync(id).AsTask();
+        }
+        public async Task<List<T>> GetByIndexAsync(int pageIndex)
+        {
+            const int pageSize = 10;
+            int indexBase = pageIndex * pageSize;
+
+            IQueryable<T> query = _entities.Set<T>()
+                .Skip(indexBase)
+                .Take(pageSize);
+
+            return await query.ToListAsync();
+        }
+        public async Task<List<T>> GetLastByDateAsync(Expression<Func<T, DateTime>> dateSelector)
+        {
+            IQueryable<T> query = _entities.Set<T>().OrderByDescending(dateSelector);
+            // Take 8 elements
+            return await query.Take(8).ToListAsync();
+        }
+        public async Task<List<T>> GetByDateAndIndexAsync(
+            Expression<Func<T, DateTime>> dateSelector,
+            int pageIndex)
+        {
+            const int pageSize = 10;
+            int indexBase = pageIndex * pageSize;
+
+            IQueryable<T> query = _entities.Set<T>()
+                .OrderBy(dateSelector)
+                .Skip(indexBase)
+                .Take(pageSize);
+
+            return await query.ToListAsync();
         }
     }
 }
