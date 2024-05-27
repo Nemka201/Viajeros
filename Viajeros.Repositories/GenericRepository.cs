@@ -70,7 +70,10 @@ namespace Noticias.Repositories
         {
             return _entities.Set<T>().Find(id);
         }
-
+        public void AddRange(IEnumerable<T> entities)
+        {
+            _entities.AddRange(entities);
+        }
         // Async Methdos
 
         public async Task<List<T>> GetAllAsync()

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Viajeros.Data.Models;
@@ -18,12 +18,12 @@ public class User
     [Required(ErrorMessage = "El campo {0} es obligatorio")]
     [Display(Name = "Usuario")]
     [MaxLength(20)]
-    public string UserName { get; set; }
+    public required string UserName { get; set; }
 
     [Required(ErrorMessage = "El campo {0} es obligatorio")]
     [Display(Name = "Contraseña")]
-    [MaxLength(20)]
-    public string Password { get; set; }
+    [MaxLength(150)]
+    public required string Password { get; set; }
     public string Rol {  get; set; }
 
 }

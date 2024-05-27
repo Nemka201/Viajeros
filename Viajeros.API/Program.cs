@@ -24,6 +24,7 @@ builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<VideoService>();
+builder.Services.AddScoped<ImageService>();
 
 builder.Services.AddSingleton(ServiceProvider => new TokenService(jwtSettings));
 builder.Services.AddAuthentication(options =>

@@ -17,17 +17,21 @@ public class UserService : IUserService
 
     public void AddUser(User user)
     {
+        // Password encrypt SHA256
         user.Password = SHA256Encrypter.Convert(user.Password);
         _unitOfWork.UserRepository.Add(user);
+        // Create JWT
         var token = _tokenService.BuildToken(user);
         _unitOfWork.Save();
     }
 
     public async Task AddUserAsync(User user)
     {
+        // Password encrypt SHA256
         user.Password = SHA256Encrypter.Convert(user.Password);
+        user = _tokenService.BuildToken(user);
         _unitOfWork.UserRepository.Add(user);
-        var token = _tokenService.BuildToken(user);
+        // Create JWT
         await _unitOfWork.SaveAsync();
     }
 
@@ -65,22 +69,28 @@ public class UserService : IUserService
 
     public User? Login(string username, string password)
     {
-       var user = _unitOfWork.UserRepository.FindBy(e => e.UserName == username).FirstOrDefault();
+        // Search for user in DB
+        var user = _unitOfWork.UserRepository.FindBy(e => e.UserName == username).FirstOrDefault();
+        // Compare password
         if (user == null || !user.Password.Equals(SHA256Encrypter.Convert(password))) 
         {
             return null;
         }
+        // Return JWT
         return _tokenService.BuildToken(user);
     }
 
     public async Task<User>? LoginAsync(string username, string password)
     {
+        // Search for user in DB
         List<User> users = await _unitOfWork.UserRepository.FindByAsync(e => e.UserName == username);
         User? user = users.FirstOrDefault();
+        // Compare password
         if (user == null || !user.Password.Equals(SHA256Encrypter.Convert(password)))
         {
             return null;
         }
+        // Return JWT
         return _tokenService.BuildToken(user);
 
     }

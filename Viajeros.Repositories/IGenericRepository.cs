@@ -14,6 +14,7 @@ namespace Noticias.Repositories
         bool Save();
         bool SaveChanges(T entity);
         T FindById(int id);
+        void AddRange(IEnumerable<T> entities);
 
         // Async methods
         Task<List<T>> GetAllAsync();

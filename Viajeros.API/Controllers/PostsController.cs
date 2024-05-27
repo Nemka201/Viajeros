@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Viajeros.Data.Context;
+using Viajeros.Data.DTO;
 using Viajeros.Data.Models;
 using Viajeros.Services;
 
@@ -77,10 +78,10 @@ namespace Viajeros.API.Controllers
         // POST: api/Posts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(Post post)
+        public async Task<ActionResult<Post>> PostPost([FromBody]PostDTO post)
         {
             await _postService.AddPostAsync(post);
-            return CreatedAtAction("GetPost", new { id = post.Id }, post);
+            return CreatedAtAction("GetPost", new { id = post.Post.Id }, post);
         }
 
         // DELETE: api/Posts/5

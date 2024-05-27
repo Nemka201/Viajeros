@@ -1,4 +1,6 @@
-﻿using Viajeros.Data.Models;
+﻿using System.Collections.Generic;
+using Viajeros.Data.DTO;
+using Viajeros.Data.Models;
 using Viajeros.UnitOfWork;
 
 namespace Viajeros.Services;
@@ -6,21 +8,38 @@ namespace Viajeros.Services;
 public class PostService : IPostService
 {
     private readonly IUnitOfWork _unitOfWork;
-    public PostService(IUnitOfWork unitofWork)
+    private readonly ImageService _imageService;
+    public PostService(IUnitOfWork unitofWork, ImageService imageService)
     {
         _unitOfWork = unitofWork;
+        _imageService = imageService;
     }
-    public void AddPost(Post post)
+    public void AddPost(PostDTO post)
     {
-        _unitOfWork.PostRepository.Add(post);
+        _unitOfWork.PostRepository.Add(post.Post);
         _unitOfWork.Save();
     }
 
-    public async Task AddPostAsync(Post post)
+    public async Task AddPostAsync(PostDTO postDto)
     {
+        var post = postDto.Post;
         await _unitOfWork.PostRepository.AddAsync(post);
         await _unitOfWork.SaveAsync();
+
+        // Verificar si hay URLs de imágenes y agregarlas
+        if (postDto.ImagesURL != null && postDto.ImagesURL.Any())
+        {
+            var postImages = postDto.ImagesURL.Select(imageUrl => new PostImage
+            {
+                PostId = post.Id,
+                ImageUrl = imageUrl
+            }).ToList();
+
+            await _imageService.AddImagesAsync(postImages);
+        }
+        await _unitOfWork.SaveAsync();
     }
+
 
     public List<Post> GetAllPosts()
     {

@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace Viajeros.Data.DTO;
-public class LoginUser
+[NotMapped]
+public class LoginUserDTO
 {
     [Required(ErrorMessage = "El campo {0} es obligatorio")]
     [Display(Name = "Usuario")]

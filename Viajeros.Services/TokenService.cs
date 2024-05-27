@@ -37,7 +37,6 @@ public class TokenService : ITokenService
         var token = new JwtSecurityToken(header, payload);
 
         user.Token = new JwtSecurityTokenHandler().WriteToken(token);
-        user.Password = null;
 
         return user;
     }

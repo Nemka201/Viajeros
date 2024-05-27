@@ -7,6 +7,6 @@ namespace Viajeros.Data.Models
     {
         [Key] public int Id { get; set; }
         [ForeignKey("Post")] public int PostId { get; set; }
-        [Required] public string ImageUrl { get; set;}
+        [Required] public string ImageUrl { get; set; }
     }
 }

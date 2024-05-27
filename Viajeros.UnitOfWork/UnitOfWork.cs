@@ -12,15 +12,18 @@ public class UnitOfWork : IUnitOfWork
     private IGenericRepository<Tag> tagRepository;
     private IGenericRepository<User> userRepository;
     private IGenericRepository<Video> videoRepository;
+    private IGenericRepository<PostImage> imageRepository;
 
     public UnitOfWork() 
     {
         _context = new ViajerosContext();
     }
+
     public IGenericRepository<Tag> TagRepository => tagRepository ??= new GenericRepository<Tag>(_context);
     public IGenericRepository<Post> PostRepository => postRepository ??= new GenericRepository<Post>(_context);
     public IGenericRepository<User> UserRepository => userRepository ??= new GenericRepository<User>(_context);
     public IGenericRepository<Video> VideoRepository => videoRepository ??= new GenericRepository<Video>(_context);
+    public IGenericRepository<PostImage> ImageRepository => imageRepository ??= new GenericRepository<PostImage>(_context);
 
     public void Save()
     {

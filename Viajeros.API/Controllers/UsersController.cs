@@ -100,7 +100,7 @@ namespace Viajeros.API.Controllers
             return NoContent();
         }
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginUser model)
+        public async Task<IActionResult> Login(LoginUserDTO model)
         {
             var user = await _userService.LoginAsync(model.UserName, model.Password);
             if (user != null)
