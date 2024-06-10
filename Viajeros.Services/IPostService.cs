@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Viajeros.Data.DTO;
+﻿using Viajeros.Data.DTO;
 using Viajeros.Data.Models;
 
 namespace Viajeros.Services;
@@ -19,5 +14,5 @@ public interface IPostService
     public Task<List<Post>> GetAllPostsAsync();
     public Task AddPostAsync(PostDTO post);
     public Task RemovePostAsync(Post post);
-    public Task UpdatePostAsync(Post post);
+    public Task UpdatePostAsync(PostDTO postDto);
 }

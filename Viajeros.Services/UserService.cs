@@ -1,6 +1,6 @@
-﻿using Viajeros.UnitOfWork;
+﻿using Viajeros.Data.Models;
 using Viajeros.Data.Utilities;
-using Viajeros.Data.Models;
+using Viajeros.UnitOfWork;
 
 namespace Viajeros.Services;
 
@@ -9,7 +9,7 @@ public class UserService : IUserService
     private readonly IUnitOfWork _unitOfWork;
     private readonly TokenService _tokenService;
 
-    public UserService(IUnitOfWork unitOfWork, TokenService tokenService) 
+    public UserService(IUnitOfWork unitOfWork, TokenService tokenService)
     {
         _unitOfWork = unitOfWork;
         _tokenService = tokenService;
@@ -72,7 +72,7 @@ public class UserService : IUserService
         // Search for user in DB
         var user = _unitOfWork.UserRepository.FindBy(e => e.UserName == username).FirstOrDefault();
         // Compare password
-        if (user == null || !user.Password.Equals(SHA256Encrypter.Convert(password))) 
+        if (user == null || !user.Password.Equals(SHA256Encrypter.Convert(password)))
         {
             return null;
         }

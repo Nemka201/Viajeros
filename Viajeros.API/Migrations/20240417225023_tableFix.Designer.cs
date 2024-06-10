@@ -13,7 +13,7 @@ namespace Viajeros.API.Migrations
 {
     [DbContext(typeof(ViajerosContext))]
     [Migration("20240417225023_tableFix")]
-    partial class tableFix
+    partial class TableFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

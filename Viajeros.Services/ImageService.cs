@@ -1,55 +1,68 @@
 ﻿using Viajeros.Data.Models;
 using Viajeros.UnitOfWork;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Viajeros.Services;
 
-public class ImageService : IImageService
+public class ImageService(IUnitOfWork unitofWork) : IImageService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    public ImageService(IUnitOfWork unitofWork)
-    {
-        _unitOfWork = unitofWork;
-    }
-
     public async Task AddImageAsync(PostImage image)
     {
-        await _unitOfWork.ImageRepository.AddAsync(image);
-        await _unitOfWork.SaveAsync();
+        await unitofWork.ImageRepository.AddAsync(image);
+        await unitofWork.SaveAsync();
     }
 
     public async Task AddImagesAsync(List<PostImage> images)
     {
-        _unitOfWork.ImageRepository.AddRange(images);
-        await _unitOfWork.SaveAsync();
+        unitofWork.ImageRepository.AddRange(images);
+        await unitofWork.SaveAsync();
     }
     public List<PostImage> GetImages()
     {
-        return _unitOfWork.ImageRepository.GetAll();
+        return unitofWork.ImageRepository.GetAll();
     }
     public async Task<List<PostImage>> GetAllImagesAsync()
     {
-        return await _unitOfWork.ImageRepository.GetAllAsync();
+        return await unitofWork.ImageRepository.GetAllAsync();
     }
     public Task<List<PostImage>> GetPostImagesAsync(int postId)
     {
-        var images = _unitOfWork.ImageRepository.FindBy(i => i.PostId == postId);
+        var images = unitofWork.ImageRepository.FindBy(i => i.PostId == postId);
         return Task.FromResult(images);
     }
     public async Task<PostImage> GetImageAsync(int id)
     {
-        return await _unitOfWork.ImageRepository.FindByIdAsync(id);
+        return await unitofWork.ImageRepository.FindByIdAsync(id);
     }
 
     public async Task RemoveImageAsync(PostImage image)
     {
-        await _unitOfWork.ImageRepository.DeleteAsync(image);
-        await _unitOfWork.SaveAsync();
+        unitofWork.ImageRepository.Delete(image);
+        await unitofWork.SaveAsync();
     }
 
     public async Task UpdateImageAsync(PostImage image)
     {
-        _unitOfWork.ImageRepository.Edit(image);
-        await _unitOfWork.SaveAsync();
+        unitofWork.ImageRepository.Edit(image);
+        await unitofWork.SaveAsync();
+    }
+
+    public async Task RemoveImagesAsync(List<PostImage> images)
+    {
+        foreach (var image in images)
+        {
+            unitofWork.ImageRepository.Delete(image);
+        }
+        await unitofWork.SaveAsync();
+
+    }
+    public async Task RemoveImagesAsync(int postId)
+    {
+        var postImages = await GetPostImagesAsync(postId);
+        foreach (var image in postImages)
+        {
+            unitofWork.ImageRepository.Delete(image);
+        }
+        await unitofWork.SaveAsync();
+
     }
 }

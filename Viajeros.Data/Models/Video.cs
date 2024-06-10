@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Viajeros.Data.Models
 {
@@ -19,12 +14,21 @@ namespace Viajeros.Data.Models
         [MaxLength(500)]
         public string Description { get; set; }
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
-        [Display (Name = "Fecha de subida")]
+        [Display(Name = "Fecha de subida")]
         public DateTime Date { get; set; }
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         [Display(Name = "Link del video")]
-        [MaxLength(200)]
+        [MaxLength(150)]
         public string VideoLink { get; set; }
+        [Display(Name = "Link del video block 2")]
+        [MaxLength(150)]
+        public string VideoLinkSecond { get; set; }
+        [Display(Name = "Link del video block 3")]
+        [MaxLength(150)]
+        public string VideoLinkThird { get; set; }
+        [Display(Name = "Link del video block 4")]
+        [MaxLength(150)]
+        public string VideoLinkFourth { get; set; }
         public ICollection<VideoTag> Tags { get; set; }
     }
 }

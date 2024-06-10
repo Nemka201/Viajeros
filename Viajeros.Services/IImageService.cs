@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Viajeros.Data.Models;
+﻿using Viajeros.Data.Models;
 
 namespace Viajeros.Services;
 
@@ -15,6 +10,7 @@ public interface IImageService
     public Task<List<PostImage>> GetPostImagesAsync(int postId);
     public Task AddImagesAsync(List<PostImage> images);
     public Task RemoveImageAsync(PostImage image);
+    public Task RemoveImagesAsync(List<PostImage> images);
     public Task UpdateImageAsync(PostImage image);
     public List<PostImage> GetImages();
 }

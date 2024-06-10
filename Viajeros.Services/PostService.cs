@@ -1,87 +1,116 @@
-﻿using System.Collections.Generic;
-using Viajeros.Data.DTO;
+﻿using Viajeros.Data.DTO;
 using Viajeros.Data.Models;
 using Viajeros.UnitOfWork;
 
 namespace Viajeros.Services;
 
-public class PostService : IPostService
+public class PostService(IUnitOfWork unitofWork, ImageService imageService) : IPostService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ImageService _imageService;
-    public PostService(IUnitOfWork unitofWork, ImageService imageService)
-    {
-        _unitOfWork = unitofWork;
-        _imageService = imageService;
-    }
     public void AddPost(PostDTO post)
     {
-        _unitOfWork.PostRepository.Add(post.Post);
-        _unitOfWork.Save();
+        unitofWork.PostRepository.Add(post.Post);
+        unitofWork.Save();
     }
 
     public async Task AddPostAsync(PostDTO postDto)
     {
-        var post = postDto.Post;
-        await _unitOfWork.PostRepository.AddAsync(post);
-        await _unitOfWork.SaveAsync();
-
-        // Verificar si hay URLs de imágenes y agregarlas
-        if (postDto.ImagesURL != null && postDto.ImagesURL.Any())
+        try
         {
-            var postImages = postDto.ImagesURL.Select(imageUrl => new PostImage
+            var post = postDto.Post;
+
+            await unitofWork.PostRepository.AddAsync(post);
+            await unitofWork.SaveAsync();
+
+            // Verificar si hay URLs de imágenes y agregarlas
+            if (postDto.ImagesURL != null && postDto.ImagesURL.Length > 0)
             {
-                PostId = post.Id,
-                ImageUrl = imageUrl
-            }).ToList();
+                var postImages = postDto.ImagesURL.Select(imageUrl => new PostImage
+                {
+                    PostId = post.Id,
+                    ImageUrl = imageUrl
+                }).ToList();
 
-            await _imageService.AddImagesAsync(postImages);
+                await imageService.AddImagesAsync(postImages);
+            }
         }
-        await _unitOfWork.SaveAsync();
+        catch (Exception ex)
+        {
+            // Manejar errores (puedes loguear el error o enviar una respuesta de error)
+            Console.WriteLine($"Error al agregar el post: {ex.Message}");
+            throw; 
+        }
     }
-
 
     public List<Post> GetAllPosts()
     {
-        return _unitOfWork.PostRepository.GetAll();
+        return unitofWork.PostRepository.GetAll();
     }
 
     public async Task<List<Post>> GetAllPostsAsync()
     {
-        return await _unitOfWork.PostRepository.GetAllAsync();
+        return await unitofWork.PostRepository.GetAllAsync();
     }
 
     public Post GetPost(int id)
     {
-        return _unitOfWork.PostRepository.FindById(id);
+        return unitofWork.PostRepository.FindById(id);
     }
 
     public async Task<Post> GetPostAsync(int id)
     {
-        return await _unitOfWork.PostRepository.FindByIdAsync(id);
+        return await unitofWork.PostRepository.FindByIdAsync(id);
     }
 
     public void RemovePost(Post post)
     {
-        _unitOfWork.PostRepository.Delete(post);
-        _unitOfWork.Save();
+        unitofWork.PostRepository.Delete(post);
+        unitofWork.Save();
     }
 
     public async Task RemovePostAsync(Post post)
     {
-        await _unitOfWork.PostRepository.DeleteAsync(post);
-        await _unitOfWork.SaveAsync();
+        unitofWork.PostRepository.Delete(post);
+        await unitofWork.SaveAsync();
     }
 
     public void UpdatePost(Post post)
     {
-        _unitOfWork.PostRepository.Edit(post);
-        _unitOfWork.Save();
+        unitofWork.PostRepository.Edit(post);
+        unitofWork.Save();
     }
 
-    public async Task UpdatePostAsync(Post post)
+    public async Task UpdatePostAsync(PostDTO postDto)
     {
-        _unitOfWork.PostRepository.Edit(post);
-        await _unitOfWork.SaveAsync();
+        try
+        {
+            var post = postDto.Post;
+
+            // Eliminar todas las imágenes del post
+            await imageService.RemoveImagesAsync(post.Id);
+
+            // Verificar si hay URLs de imágenes y agregarlas
+            if (postDto.ImagesURL != null && postDto.ImagesURL.Length > 0)
+            {
+                var postImagesDto = postDto.ImagesURL.Select(imageUrl => new PostImage
+                {
+                    PostId = post.Id,
+                    ImageUrl = imageUrl
+                }).ToList();
+
+                await imageService.AddImagesAsync(postImagesDto);
+            }
+
+            // Actualizar el post
+            unitofWork.PostRepository.Edit(post);
+            await unitofWork.SaveAsync();
+
+        }
+        catch (Exception ex)
+        {
+            // Manejar errores (puedes loguear el error o enviar una respuesta de error)
+            Console.WriteLine($"Error al modificar el post: {ex.Message}");
+            throw;
+        }
     }
+
 }

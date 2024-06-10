@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Viajeros.Data.Context;
 using Viajeros.Data.Models;
 using Viajeros.Services;
 
@@ -13,32 +7,25 @@ namespace Viajeros.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VideosController : ControllerBase
+    public class VideosController(VideoService videoService) : ControllerBase
     {
-        private readonly VideoService _videoService;
-
-        public VideosController(VideoService videoService)
-        {
-            _videoService = videoService;
-        }
-
         // GET: api/Videos/GetAll
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<Video>>> GetVideos()
         {
-            return await _videoService.GetAllVideosAsync();
+            return await videoService.GetAllVideosAsync();
         }
         // GET: api/Videos/GetLasts
         [HttpGet("GetLasts")]
         public async Task<ActionResult<IEnumerable<Video>>> GetLastsVideos()
         {
-            return await _videoService.GetLastsVideosAsync();
+            return await videoService.GetLastsVideosAsync();
         }
         // GET: api/Videos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Video>> GetVideo(int id)
         {
-            var video = await _videoService.GetVideoAsync(id);
+            var video = await videoService.GetVideoAsync(id);
 
             if (video == null)
             {
@@ -62,7 +49,7 @@ namespace Viajeros.API.Controllers
 
             try
             {
-                await _videoService.UpdateVideoAsync(video);
+                await videoService.UpdateVideoAsync(video);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -84,7 +71,7 @@ namespace Viajeros.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Video>> PostVideo(Video video)
         {
-            await _videoService.AddVideoAsync(video);
+            await videoService.AddVideoAsync(video);
 
             return CreatedAtAction("GetVideo", new { id = video.Id }, video);
         }
@@ -93,20 +80,20 @@ namespace Viajeros.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(int id)
         {
-            var video = await _videoService.GetVideoAsync(id);
+            var video = await videoService.GetVideoAsync(id);
             if (video == null)
             {
                 return NotFound();
             }
 
-            await _videoService.RemoveVideoAsync(video);
+            await videoService.RemoveVideoAsync(video);
 
             return NoContent();
         }
 
         private bool VideoExists(int id)
         {
-            return _videoService.GetAllVideos().Any(e => e.Id == id);
+            return videoService.GetAllVideos().Any(e => e.Id == id);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿ using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Viajeros.Data.Models;
@@ -24,6 +24,6 @@ public class User
     [Display(Name = "Contraseña")]
     [MaxLength(150)]
     public required string Password { get; set; }
-    public string Rol {  get; set; }
+    public string Rol { get; set; }
 
 }

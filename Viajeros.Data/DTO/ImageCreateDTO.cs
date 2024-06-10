@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Viajeros.Data.DTO
 {
     [NotMapped]
     public class ImageCreateDTO
     {
-        public ImageCreateDTO(int postId, string url) 
+        public ImageCreateDTO(int postId, string url)
         {
             this.PostId = postId;
             this.Url = url;

@@ -1,11 +1,11 @@
-using Viajeros.Data.Context;
-using Viajeros.Data.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Viajeros.UnitOfWork;
-using Viajeros.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Viajeros.Data.Context;
+using Viajeros.Data.Models;
+using Viajeros.Services;
+using Viajeros.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;

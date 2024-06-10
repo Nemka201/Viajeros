@@ -14,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
     private IGenericRepository<Video> videoRepository;
     private IGenericRepository<PostImage> imageRepository;
 
-    public UnitOfWork() 
+    public UnitOfWork()
     {
         _context = new ViajerosContext();
     }

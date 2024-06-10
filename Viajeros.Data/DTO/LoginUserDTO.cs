@@ -7,9 +7,9 @@ public class LoginUserDTO
     [Required(ErrorMessage = "El campo {0} es obligatorio")]
     [Display(Name = "Usuario")]
     [MaxLength(20)]
-    public string UserName { get; set;}
+    public string UserName { get; set; }
     [Required(ErrorMessage = "El campo {0} es obligatorio")]
     [Display(Name = "Contraseña")]
     [MaxLength(20)]
-    public string Password { get; set;}
+    public string Password { get; set; }
 }
