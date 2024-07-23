@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Viajeros.Data.Context;
 
@@ -11,9 +12,11 @@ using Viajeros.Data.Context;
 namespace Viajeros.API.Migrations
 {
     [DbContext(typeof(ViajerosContext))]
-    partial class ViajerosContextModelSnapshot : ModelSnapshot
+    [Migration("20240713155846_fixAddVideo")]
+    partial class fixAddVideo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,11 +130,11 @@ namespace Viajeros.API.Migrations
 
             modelBuilder.Entity("Viajeros.Data.Models.Video", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -152,6 +155,7 @@ namespace Viajeros.API.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("VideoLinkFourth")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
@@ -179,7 +183,7 @@ namespace Viajeros.API.Migrations
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VideoID")
+                    b.Property<int>("VideoID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -210,7 +214,9 @@ namespace Viajeros.API.Migrations
 
                     b.HasOne("Viajeros.Data.Models.Video", "Video")
                         .WithMany("Tags")
-                        .HasForeignKey("VideoID");
+                        .HasForeignKey("VideoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Tag");
 

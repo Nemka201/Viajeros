@@ -5,6 +5,7 @@ namespace Viajeros.Services;
 public interface IVideoService
 {
     public Video GetVideo(int id);
+    public Task<int> GetCountAsync();
     public List<Video> GetAllVideos();
     public void AddVideo(Video video);
     public void RemoveVideo(Video video);

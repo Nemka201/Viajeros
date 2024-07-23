@@ -13,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     private IGenericRepository<User> userRepository;
     private IGenericRepository<Video> videoRepository;
     private IGenericRepository<PostImage> imageRepository;
+    private IGenericRepository<VideoTag> videoTagRepository;
 
     public UnitOfWork()
     {
@@ -24,6 +25,8 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<User> UserRepository => userRepository ??= new GenericRepository<User>(_context);
     public IGenericRepository<Video> VideoRepository => videoRepository ??= new GenericRepository<Video>(_context);
     public IGenericRepository<PostImage> ImageRepository => imageRepository ??= new GenericRepository<PostImage>(_context);
+    public IGenericRepository<VideoTag> VideoTagRepository => videoTagRepository ??= new GenericRepository<VideoTag>(_context);
+
 
     public void Save()
     {

@@ -51,7 +51,7 @@ namespace Viajeros.Services
 
         public async Task RemoveTagAsync(Tag tag)
         {
-            await _unitOfWork.TagRepository.DeleteAsync(tag);
+            _unitOfWork.TagRepository.Delete(tag);
             await _unitOfWork.SaveAsync();
         }
 

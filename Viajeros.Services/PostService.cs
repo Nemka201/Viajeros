@@ -6,10 +6,32 @@ namespace Viajeros.Services;
 
 public class PostService(IUnitOfWork unitofWork, ImageService imageService) : IPostService
 {
-    public void AddPost(PostDTO post)
+    public void AddPost(PostDTO postDto)
     {
-        unitofWork.PostRepository.Add(post.Post);
-        unitofWork.Save();
+        try
+        {
+            var post = postDto.Post;
+
+             unitofWork.PostRepository.Add(post);
+             unitofWork.Save();
+
+            // Verificar si hay URLs de imágenes y agregarlas
+            if (postDto.ImagesURL != null && postDto.ImagesURL.Length > 0)
+            {
+                var postImages = postDto.ImagesURL.Select(imageUrl => new PostImage
+                {
+                    PostId = post.Id,
+                    ImageUrl = imageUrl
+                }).ToList();
+
+                Task task = imageService.AddImagesAsync(postImages);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al agregar el post: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task AddPostAsync(PostDTO postDto)
@@ -35,7 +57,6 @@ public class PostService(IUnitOfWork unitofWork, ImageService imageService) : IP
         }
         catch (Exception ex)
         {
-            // Manejar errores (puedes loguear el error o enviar una respuesta de error)
             Console.WriteLine($"Error al agregar el post: {ex.Message}");
             throw; 
         }
@@ -46,11 +67,23 @@ public class PostService(IUnitOfWork unitofWork, ImageService imageService) : IP
         return unitofWork.PostRepository.GetAll();
     }
 
+    public async Task<int> GetCountAsync()
+    {
+        return await unitofWork.PostRepository.GetCountAsync();
+    }
+
     public async Task<List<Post>> GetAllPostsAsync()
     {
         return await unitofWork.PostRepository.GetAllAsync();
     }
-
+    public async Task<List<Post>> GetIndexedPostsAsync(int index)
+    {
+        return await unitofWork.PostRepository.GetByIndexAsync(index);
+    }
+    public async Task<List<Post>> GetPostByIndexAsync(int pageIndex, int pageSize)
+    {
+        return await unitofWork.PostRepository.GetByIndexAsync(pageIndex, pageSize);
+    }
     public Post GetPost(int id)
     {
         return unitofWork.PostRepository.FindById(id);
@@ -107,7 +140,6 @@ public class PostService(IUnitOfWork unitofWork, ImageService imageService) : IP
         }
         catch (Exception ex)
         {
-            // Manejar errores (puedes loguear el error o enviar una respuesta de error)
             Console.WriteLine($"Error al modificar el post: {ex.Message}");
             throw;
         }

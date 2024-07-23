@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using Viajeros.Data.Models;
 using Viajeros.Services;
 
@@ -15,11 +17,25 @@ namespace Viajeros.API.Controllers
         {
             return await videoService.GetAllVideosAsync();
         }
+
         // GET: api/Videos/GetLasts
         [HttpGet("GetLasts")]
         public async Task<ActionResult<IEnumerable<Video>>> GetLastsVideos()
         {
             return await videoService.GetLastsVideosAsync();
+        }
+
+        // GET: api/Videos/GetLasts
+        [HttpGet("GetByIndex/{pageIndex}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<Video>>> GetByIndex(int pageIndex, int pageSize)
+        {
+            return await videoService.GetVideoByIndexAsync(pageIndex, pageSize);
+        }
+        [HttpGet("VideoCount")]
+        public async Task<IActionResult> GetVideoCount()
+        {
+            var count = await videoService.GetCountAsync();
+            return Ok(new { Count = count });
         }
         // GET: api/Videos/5
         [HttpGet("{id}")]
@@ -71,9 +87,30 @@ namespace Viajeros.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Video>> PostVideo(Video video)
         {
-            await videoService.AddVideoAsync(video);
+            try
+            {
+                // Aquí configuramos las opciones de serialización
+                var jsonSerializerOptions = new JsonSerializerOptions
+                {
+                    // Configura las opciones según tus necesidades
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    WriteIndented = true, // Para que el JSON sea legible
+                    ReferenceHandler = ReferenceHandler.Preserve // Para evitar referencias circulares
+                };
 
-            return CreatedAtAction("GetVideo", new { id = video.Id }, video);
+                await videoService.AddVideoAsync(video);
+
+                // Devolvemos el objeto serializado con las opciones configuradas
+                return new JsonResult(video, jsonSerializerOptions)
+                {
+                    StatusCode = 201 // Código de estado Created
+                };
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores
+                return BadRequest($"Error al agregar el video: {ex.Message}");
+            }
         }
 
         // DELETE: api/Videos/5

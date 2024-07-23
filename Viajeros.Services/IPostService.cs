@@ -12,6 +12,7 @@ public interface IPostService
     public void UpdatePost(Post post);
     public Task<Post> GetPostAsync(int id);
     public Task<List<Post>> GetAllPostsAsync();
+    public Task<List<Post>> GetIndexedPostsAsync(int index);
     public Task AddPostAsync(PostDTO post);
     public Task RemovePostAsync(Post post);
     public Task UpdatePostAsync(PostDTO postDto);

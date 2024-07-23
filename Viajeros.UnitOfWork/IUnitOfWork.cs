@@ -10,6 +10,8 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<User> UserRepository { get; }
     IGenericRepository<Video> VideoRepository { get; }
     IGenericRepository<PostImage> ImageRepository { get; }
+    IGenericRepository<VideoTag> VideoTagRepository { get; }
+
 
     void Save();
     Task<Task> SaveAsync();

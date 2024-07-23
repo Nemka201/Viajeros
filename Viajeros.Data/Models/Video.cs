@@ -4,7 +4,11 @@ namespace Viajeros.Data.Models
 {
     public class Video
     {
-        public int Id { get; set; }
+        public Video()
+        {
+            Date = DateTime.Now;
+        }
+        public int? Id { get; set; }
         [Required(ErrorMessage = "El campo {0} es obligatorio")]
         [Display(Name = "Nombre")]
         [MaxLength(20)]
@@ -22,13 +26,13 @@ namespace Viajeros.Data.Models
         public string VideoLink { get; set; }
         [Display(Name = "Link del video block 2")]
         [MaxLength(150)]
-        public string VideoLinkSecond { get; set; }
+        public string? VideoLinkSecond { get; set; }
         [Display(Name = "Link del video block 3")]
         [MaxLength(150)]
-        public string VideoLinkThird { get; set; }
+        public string? VideoLinkThird { get; set; }
         [Display(Name = "Link del video block 4")]
         [MaxLength(150)]
-        public string VideoLinkFourth { get; set; }
+        public string? VideoLinkFourth { get; set; }
         public ICollection<VideoTag> Tags { get; set; }
     }
 }

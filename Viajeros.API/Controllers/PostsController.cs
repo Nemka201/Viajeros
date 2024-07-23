@@ -25,6 +25,41 @@ namespace Viajeros.API.Controllers
             return posts;
         }
 
+        // GET: api/Posts
+        [HttpGet("Index/{index}")]
+        public async Task<ActionResult<IEnumerable<Post>>> GetIndexedPosts(int index)
+        {
+            try
+            {
+                var posts = await postService.GetIndexedPostsAsync(index);
+
+                foreach (var post in posts)
+                {
+                    var images = await imageService.GetPostImagesAsync(post.Id);
+                    post.Images = [.. images];
+                }
+
+                var orderedPosts = posts.OrderByDescending(post => post.Created);
+                return new OkObjectResult(orderedPosts);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener los posts: {ex.Message}");
+                return new StatusCodeResult(500);
+            }
+        }
+        // GET: api/Videos/GetLasts
+        [HttpGet("GetByIndex/{pageIndex}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<Post>>> GetByIndex(int pageIndex, int pageSize)
+        {
+            return await postService.GetPostByIndexAsync(pageIndex, pageSize);
+        }
+        [HttpGet("VideoCount")]
+        public async Task<IActionResult> GetVideoCount()
+        {
+            var count = await postService.GetCountAsync();
+            return Ok(new { Count = count });
+        }
         // GET: api/Posts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
@@ -48,7 +83,6 @@ namespace Viajeros.API.Controllers
             {
                 return BadRequest();
             }
-            //_context.Entry(post).State = EntityState.Modified;
             try
             {
                 await postService.UpdatePostAsync(postDto);

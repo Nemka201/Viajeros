@@ -1,4 +1,5 @@
-﻿using Viajeros.Data.Models;
+﻿using Serilog;
+using Viajeros.Data.Models;
 using Viajeros.UnitOfWork;
 
 namespace Viajeros.Services;
@@ -6,6 +7,7 @@ namespace Viajeros.Services;
 public class VideoService : IVideoService
 {
     private readonly IUnitOfWork _unitOfWork;
+
     public VideoService(IUnitOfWork unitofWork)
     {
         _unitOfWork = unitofWork;
@@ -18,9 +20,23 @@ public class VideoService : IVideoService
 
     public async Task AddVideoAsync(Video video)
     {
-        await _unitOfWork.VideoRepository.AddAsync(video);
-        await _unitOfWork.SaveAsync();
+        try
+        {
+            // Validate tag association
+            if (!video.Tags.Any())
+            {
+                throw new ArgumentException("El video debe tener al menos 1 Tag");
+            }
+            _unitOfWork.VideoRepository.Add(video);
+            await _unitOfWork.SaveAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio" + ex.Message);
+        }
     }
+
+
 
     public List<Video> GetAllVideos()
     {
@@ -29,8 +45,20 @@ public class VideoService : IVideoService
 
     public async Task<List<Video>> GetAllVideosAsync()
     {
-        return await _unitOfWork.VideoRepository.GetAllAsync();
+        var videos = await _unitOfWork.VideoRepository.GetAllAsync();
+        foreach (var video in videos)
+        {
+            await _unitOfWork.VideoTagRepository
+                .FindByAsync(vt => vt.VideoID == video.Id); // Carga los VideoTag relacionados
+        }
+        return videos;
     }
+
+    public async Task<int> GetCountAsync()
+    {
+        return await _unitOfWork.VideoRepository.GetCountAsync();
+    }
+
 
     public Video GetVideo(int id)
     {
@@ -41,7 +69,10 @@ public class VideoService : IVideoService
     {
         return await _unitOfWork.VideoRepository.FindByIdAsync(id);
     }
-
+    public async Task<List<Video>> GetVideoByIndexAsync(int pageIndex, int pageSize)
+    {
+        return await _unitOfWork.VideoRepository.GetByIndexAsync(pageIndex, pageSize);
+    }
     public void RemoveVideo(Video video)
     {
         _unitOfWork.VideoRepository.Delete(video);
@@ -50,9 +81,24 @@ public class VideoService : IVideoService
 
     public async Task RemoveVideoAsync(Video video)
     {
-        await _unitOfWork.VideoRepository.DeleteAsync(video);
+        // Uso LINQ para obtener los video tags para el ID del video
+        var videoTags = await _unitOfWork.VideoTagRepository.FindByAsync(vt => vt.VideoID == video.Id);
+
+
+        // Elimino los video tags relacionados
+        foreach (var videoTag in videoTags)
+        {
+            _unitOfWork.VideoTagRepository.Delete(videoTag);
+        }
+
+        // Elimino el video
+        _unitOfWork.VideoRepository.Delete(video);
+
+        // Guardo los cambios en la base de datos
         await _unitOfWork.SaveAsync();
     }
+
+
 
     public void UpdateVideo(Video video)
     {
@@ -62,9 +108,28 @@ public class VideoService : IVideoService
 
     public async Task UpdateVideoAsync(Video video)
     {
+        // Obtener los video tags del video asociado
+        var originalVideoTags = await _unitOfWork.VideoTagRepository.FindByAsync(vt => vt.VideoID == video.Id);
+
+        // Modificar los cambios del video
         _unitOfWork.VideoRepository.Edit(video);
+
+        // Manejar los posibles cambios de los video tags
+        //var updatedVideoTags = video.Tags; // Obtener los video tags actualizados
+        //var newVideoTags = updatedVideoTags.Where(vt => !originalVideoTags.Any(ot => ot.Id == vt.Id)).ToList(); // Nuevos tags
+        //var removedVideoTags = originalVideoTags.Where(ot => !updatedVideoTags.Any(ut => ut.Id == ot.Id)).ToList(); // Tags removidos
+
+        
+        // Eliminar los video tags removidos
+        foreach (var removedVideoTag in originalVideoTags)
+        {
+            _unitOfWork.VideoTagRepository.Delete(removedVideoTag);
+        }
+
+        // Guardar los cambios en la base e datos
         await _unitOfWork.SaveAsync();
     }
+
     public List<Video> FindByName(string name)
     {
         return _unitOfWork.VideoRepository.FindBy(v => v.Name == name);

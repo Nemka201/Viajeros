@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 using System.Linq.Expressions;
 using Viajeros.Data.Context;
+using Viajeros.Data.Models;
 namespace Noticias.Repositories
 {
     public class GenericRepository<T>(ViajerosContext context) : IGenericRepository<T>
@@ -8,7 +10,6 @@ namespace Noticias.Repositories
     {
         public ViajerosContext Db
         {
-
             get { return context; }
             set { context = value; }
         }
@@ -111,6 +112,11 @@ namespace Noticias.Repositories
         }
         public async Task<List<T>> GetByIndexAsync(int pageIndex)
         {
+            if (pageIndex < 0)
+            {
+                throw new ArgumentException("El índice de página debe ser mayor o igual a cero.", nameof(pageIndex));
+            }
+
             const int pageSize = 10;
             int indexBase = pageIndex * pageSize;
 
@@ -118,8 +124,42 @@ namespace Noticias.Repositories
                 .Skip(indexBase)
                 .Take(pageSize);
 
-            return await query.ToListAsync();
+            try
+            {
+                return await query.ToListAsync();
+            }
+            catch (DbException ex)
+            {
+                // Manejar errores de base de datos (puedes loguear el error o lanzar una excepción personalizada)
+                Console.WriteLine($"Error al obtener los posts: {ex.Message}");
+                throw;
+            }
         }
+        public async Task<List<T>> GetByIndexAsync(int pageIndex, int pageSize)
+        {
+            if (pageIndex < 0)
+            {
+                throw new ArgumentException("El índice de página debe ser mayor o igual a cero.", nameof(pageIndex));
+            }
+
+            int indexBase = pageIndex * pageSize;
+
+            IQueryable<T> query = context.Set<T>()
+                .Skip(indexBase)
+                .Take(pageSize);
+
+            try
+            {
+                return await query.ToListAsync();
+            }
+            catch (DbException ex)
+            {
+                // Manejar errores de base de datos (puedes loguear el error o lanzar una excepción personalizada)
+                Console.WriteLine($"Error al obtener los posts: {ex.Message}");
+                throw;
+            }
+        }
+
         public async Task<List<T>> GetLastByDateAsync(Expression<Func<T, DateTime>> dateSelector)
         {
             IQueryable<T> query = context.Set<T>().OrderByDescending(dateSelector);
@@ -139,6 +179,23 @@ namespace Noticias.Repositories
                 .Take(pageSize);
 
             return await query.ToListAsync();
+        }
+
+        public async Task<List<T>> GetByDateAndIndexAsync(
+        Expression<Func<T, DateTime>> dateSelector, int pageIndex, int pageSize)
+        {
+            int indexBase = pageIndex * pageSize;
+
+            IQueryable<T> query = context.Set<T>()
+                .OrderBy(dateSelector)
+                .Skip(indexBase)
+                .Take(pageSize);
+
+            return await query.ToListAsync();
+        }
+        public async Task<int> GetCountAsync()
+        {
+            return await context.Set<T>().CountAsync();
         }
     }
 }

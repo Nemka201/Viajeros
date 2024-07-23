@@ -14,7 +14,7 @@ namespace Viajeros.Data.Models
         [Display(Name = "Descripción")]
         [MaxLength(100)]
         public string Description { get; set; }
-        public ICollection<VideoTag> Tags { get; set; }
+        public ICollection<VideoTag>? Tags { get; set; }
 
     }
 }
