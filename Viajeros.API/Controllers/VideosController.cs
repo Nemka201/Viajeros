@@ -15,14 +15,17 @@ namespace Viajeros.API.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<Video>>> GetVideos()
         {
-            return await videoService.GetAllVideosAsync();
+            var videos = await videoService.GetAllVideosAsync();
+            return Ok(videos);
+
         }
 
         // GET: api/Videos/GetLasts
         [HttpGet("GetLasts")]
         public async Task<ActionResult<IEnumerable<Video>>> GetLastsVideos()
         {
-            return await videoService.GetLastsVideosAsync();
+            var videos = await videoService.GetLastsVideosAsync();
+            return videos; 
         }
 
         // GET: api/Videos/GetLasts

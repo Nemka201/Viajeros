@@ -2,7 +2,6 @@
 using System.Data.Common;
 using System.Linq.Expressions;
 using Viajeros.Data.Context;
-using Viajeros.Data.Models;
 namespace Noticias.Repositories
 {
     public class GenericRepository<T>(ViajerosContext context) : IGenericRepository<T>
@@ -73,6 +72,22 @@ namespace Noticias.Repositories
         {
             IQueryable<T> query = context.Set<T>();
             return await query.ToListAsync();
+        }
+        public async Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = context.Set<T>();
+
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.ToListAsync();
+
         }
 
         public async Task<List<T>> FindByAsync(Expression<Func<T, bool>> predicate)

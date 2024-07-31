@@ -43,14 +43,10 @@ public class VideoService : IVideoService
         return _unitOfWork.VideoRepository.GetAll();
     }
 
-    public async Task<List<Video>> GetAllVideosAsync()
+    public async Task<IEnumerable<Video>> GetAllVideosAsync()
     {
-        var videos = await _unitOfWork.VideoRepository.GetAllAsync();
-        foreach (var video in videos)
-        {
-            await _unitOfWork.VideoTagRepository
-                .FindByAsync(vt => vt.VideoID == video.Id); // Carga los VideoTag relacionados
-        }
+        var videos = await _unitOfWork.VideoRepository.GetAllAsync(v => v.Tags);
+        
         return videos;
     }
 
@@ -84,7 +80,6 @@ public class VideoService : IVideoService
         // Uso LINQ para obtener los video tags para el ID del video
         var videoTags = await _unitOfWork.VideoTagRepository.FindByAsync(vt => vt.VideoID == video.Id);
 
-
         // Elimino los video tags relacionados
         foreach (var videoTag in videoTags)
         {
@@ -113,12 +108,6 @@ public class VideoService : IVideoService
 
         // Modificar los cambios del video
         _unitOfWork.VideoRepository.Edit(video);
-
-        // Manejar los posibles cambios de los video tags
-        //var updatedVideoTags = video.Tags; // Obtener los video tags actualizados
-        //var newVideoTags = updatedVideoTags.Where(vt => !originalVideoTags.Any(ot => ot.Id == vt.Id)).ToList(); // Nuevos tags
-        //var removedVideoTags = originalVideoTags.Where(ot => !updatedVideoTags.Any(ut => ut.Id == ot.Id)).ToList(); // Tags removidos
-
         
         // Eliminar los video tags removidos
         foreach (var removedVideoTag in originalVideoTags)

@@ -13,7 +13,7 @@ public interface IVideoService
     public List<Video> FindByName(string name);
     public List<Video> FindByTag(int tagId);
     public Task<Video> GetVideoAsync(int id);
-    public Task<List<Video>> GetAllVideosAsync();
+    public Task<IEnumerable<Video>> GetAllVideosAsync();
     public Task AddVideoAsync(Video video);
     public Task RemoveVideoAsync(Video video);
     public Task UpdateVideoAsync(Video video);

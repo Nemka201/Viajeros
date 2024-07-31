@@ -35,6 +35,7 @@ namespace Noticias.Repositories
 
         // Devuelve todos los elemento
         Task<List<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includeProperties);
 
         // Devuelve cantidad de elementos
         Task<int> GetCountAsync();
